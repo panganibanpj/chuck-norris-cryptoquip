@@ -1,0 +1,47 @@
+<div class="page home container">
+
+
+
+<div class="puzzle row">
+	<div class="wordContainer" ng-repeat="word in quote.WORDS">
+		<div class="letterContainer" ng-repeat="letter in word.LETTERS">
+			<div class="letter" ng-class="{invalid: !letter.VALID}">
+				<input
+					type="text"
+					class="guess"
+					ng-model="textBoxes[letter.KEY]"
+					ng-hide="!letter.VALID"
+					ng-change="testLetter(letter)"
+					limit-chars="1"
+				/>
+				<span class="display" ng-show="!letter.VALID">{{letter.DISPLAY}}</span>
+			</div>
+			<div class="keyContainer">
+				<span class="key">{{letter.KEY}}</span>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<div class="status row">
+	<div class="timer col-xs-6">
+		<span class="time">{{status.timeRemaining / 1000 | number : 1 }} seconds left</span>
+	</div>
+	<div class="score col-xs-6">
+		<span class="cnoIcon"></span>
+		<span class="multiplierIcon">x</span>
+		<span class="score">{{status.score}}</span>
+	</div>
+</div>
+
+
+
+<div class="disclaimer row">
+	<p>Jokes courtesy of <a href="http://www.icndb.com/" tabindex="-1">ICNDB</a>.</p>
+</div>
+
+
+
+</div>

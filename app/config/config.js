@@ -10,7 +10,7 @@ function config() {
 		ZERO: 0,
 		ONE: 1
 	};
-	this.strings = STRINGS = {
+	this.STRINGS = {
 		EMPTY: '',
 		SPACE: ' '
 	};
