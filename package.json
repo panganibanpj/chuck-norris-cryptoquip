@@ -1,0 +1,19 @@
+{
+  "name": "chuck-norris-cryptoquip",
+  "version": "0.0.0",
+  "description": "chuck-norris-cryptoquip =======================",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/panganibanpj/chuck-norris-cryptoquip.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/panganibanpj/chuck-norris-cryptoquip/issues"
+  },
+  "homepage": "https://github.com/panganibanpj/chuck-norris-cryptoquip"
+}
