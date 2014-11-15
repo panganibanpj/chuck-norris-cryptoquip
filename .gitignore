@@ -1,0 +1,5 @@
+sftp-config.json
+app/components
+bower_components
+dist
+node_modules
