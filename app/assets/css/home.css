@@ -1,0 +1,48 @@
+.puzzle {
+	text-align: center;
+}
+.puzzle .wordContainer {
+	display: inline-block;
+	margin: 0 10px;
+}
+.puzzle .wordContainer:first-of-type {
+	margin-left: 0;
+}
+.puzzle .wordContainer:last-of-type {
+	margin-right: 0;
+}
+.puzzle .letterContainer {
+	display: inline-block;
+	height: 50px;
+	margin: 10px 2px;
+	text-align: center;
+	text-transform: uppercase;
+	vertical-align: top;
+	width: 21px;
+}
+.puzzle .letterContainer .letter:not(.invalid) {
+	border-bottom: 1px solid black;
+}
+.puzzle .letterContainer .letter .guess {
+	border: 0;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	text-transform: uppercase;
+	width: 20px;
+}
+.puzzle .letterContainer .key {
+	height: 20px;
+	width: 16px;
+}
+.puzzle .letterContainer .letter.invalid + .keyContainer {
+	visibility: hidden;
+}
+
+.status .timer {
+	text-align: left;
+}
+.status .score {
+	text-align: right;
+}
