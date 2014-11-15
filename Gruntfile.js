@@ -1,10 +1,20 @@
+/*
+	Make sure you've run:
+		npm install
+		bower install
+
+	Dev build: grunt DEV --keep_console
+		Watches ./app
+
+	Release build: grunt RELEASE
+		Bower install
+
+	--keep_console is optional
+
+*/
 module.exports = function(grunt) {
 	require('load-grunt-tasks')(grunt);
-
-
-
 	var keep_console = grunt.option('keep_console');
-
 
 
 	grunt.initConfig({
@@ -15,7 +25,8 @@ module.exports = function(grunt) {
 			install: {
 				options: {
 					targetDir : './app/components',
-					cleanBowerDir : false
+					cleanBowerDir : false,
+					install: false
 				}
 			}
 		},
@@ -117,7 +128,7 @@ module.exports = function(grunt) {
 					'./app/**'
 				],
 				tasks: [
-					'afterInit'
+					'default'
 				],
 				options: {
 					nospawn: true
@@ -127,8 +138,7 @@ module.exports = function(grunt) {
 	});
 
 
-
-	grunt.registerTask('rev', [
+	grunt.registerTask('productionalize', [ //Minification and cache bust
 		'useminPrepare'
 		,'uglify:generated'
 		,'cssmin:generated'
@@ -136,16 +146,20 @@ module.exports = function(grunt) {
 		,'userev'
 		,'filerev:assets'
 		,'usemin'
-	]);
-	grunt.registerTask('afterInit', [
-		'clean:main'
-		,'copy'
-		,'rev'
 		,'clean:dist'
 	]);
 	grunt.registerTask('default', [
 		'bower'
-		,'afterInit'
-		// ,'watch'
+		,'clean:main'
+		,'copy'
+	]);
+
+	grunt.registerTask('DEV', [
+		'default'
+		,'watch'
+	]);
+	grunt.registerTask('RELEASE', [
+		'default'
+		,'productionalize'
 	]);
 };
