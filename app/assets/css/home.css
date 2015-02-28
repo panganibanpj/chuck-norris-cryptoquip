@@ -1,6 +1,9 @@
+/* Puzzle */
 .puzzle {
 	text-align: center;
 }
+
+/* Puzzle - Words */
 .puzzle .wordContainer {
 	display: inline-block;
 	margin: 0 10px;
@@ -11,6 +14,8 @@
 .puzzle .wordContainer:last-of-type {
 	margin-right: 0;
 }
+
+/* Puzzle - Letters */
 .puzzle .letterContainer {
 	display: inline-block;
 	height: 50px;
@@ -40,6 +45,7 @@
 	visibility: hidden;
 }
 
+/* Status */
 .status .timer {
 	text-align: left;
 }

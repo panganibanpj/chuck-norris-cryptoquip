@@ -7,14 +7,14 @@ TODO:
 	Hints
 */
 
-;(function(angular, app) {
+;(function(angular, app, $) {
 
 
 
 /* Main */
-function GameCtrl($scope, config, $http, $interval) {
+function GameCtrl($scope, $http, $timeout, $interval, config) {
 	/* Config */
-	var CONFIG = {
+	var CONFIG = angular.extend({
 		NAMESPACE: 'GAME.',
 
 		//Fetching and massaging
@@ -35,15 +35,15 @@ function GameCtrl($scope, config, $http, $interval) {
 		//Timer
 		STARTING_TIME: 60000,
 		INTERVAL_LENGTH: 100
-	};
-	angular.extend(CONFIG, config);
+	}, config);
 
 
 
 	/* Variables */
 	var NAMESPACE = CONFIG.NAMESPACE,
 		blockedKeys = '',
-		countdownTimer
+		countdownTimer,
+		letterArray = []
 	;
 	$scope.quote = {};
 	$scope.textBoxes = {};
@@ -77,8 +77,12 @@ function GameCtrl($scope, config, $http, $interval) {
 			method: CONFIG.HTTP_METHOD,
 			url: CONFIG.QUOTE_ENDPOINT
 		})
-		.error(function(data) { $scope.$emit(NAMESPACE + EVENTS.ERROR_GETTING_QUOTE, [data]); })
-		.success(function(data) { $scope.$emit(NAMESPACE + EVENTS.GOT_NEW_QUOTE, [data]); })
+		.error(function(data) {
+			$scope.$emit(NAMESPACE + EVENTS.ERROR_GETTING_QUOTE, [data]);
+		})
+		.success(function(data) {
+			$scope.$emit(NAMESPACE + EVENTS.GOT_NEW_QUOTE, [data]);
+		})
 		.then(setupTimer)
 		;
 	}
@@ -98,7 +102,9 @@ function GameCtrl($scope, config, $http, $interval) {
 	function setupTimer() {
 		var countdownTick = function() {
 			$scope.status.timeRemaining -= CONFIG.INTERVAL_LENGTH;
-			if (!$scope.status.timeRemaining) $scope.$emit(NAMESPACE + EVENTS.OUT_OF_TIME);
+			if (!$scope.status.timeRemaining) {
+				$scope.$emit(NAMESPACE + EVENTS.OUT_OF_TIME);
+			}
 		};
 
 		$scope.status = {
@@ -114,10 +120,49 @@ function GameCtrl($scope, config, $http, $interval) {
 
 		//
 	}
-	function testLetter(event, letterMap) {
-		if ($scope.textBoxes[letterMap.KEY].length === CONFIG.NUMBERS.ZERO) return;
-
-		console.log(letterMap.LETTER === $scope.textBoxes[letterMap.KEY].toUpperCase());
+	function testLetter($event, letterMap) {
+		if ($scope.textBoxes[letterMap.KEY].letter.length === CONFIG.NUMBERS.ZERO) {
+			return;
+		}
+		// console.log(letterMap, $scope.textBoxes);
+		if (letterMap.LETTER === $scope.textBoxes[letterMap.KEY].letter.toUpperCase()) {
+			$scope.textBoxes[letterMap.KEY].SOLVED = true;
+			var $letterContainer = $(event.target).closest('.letterContainer'),
+				$nextLetterContainer = $letterContainer.next('.letterContainer'),
+				$nextLetter = $nextLetterContainer.find('.letter:not(.invalid) input.guess:enabled'),
+				$tryLetter,
+				tryKey = $nextLetter.length === 0 ? false : angular.element($nextLetter).scope().letter.KEY
+			;
+			// console.log(tryKey, $scope.textBoxes[tryKey], event.target);
+			if (tryKey && $scope.textBoxes[tryKey] && $scope.textBoxes[tryKey].SOLVED) {
+				$nextLetter.length = 0;
+			}
+			while ($nextLetter.length === 0) {
+				if ($nextLetterContainer.length === 0) {
+					$nextLetterContainer = $letterContainer.parent().next().find('.letterContainer').first();
+					if ($nextLetterContainer.length === 0) {
+						break; //Probably End of puzzle
+					}
+				}
+				else {console.log('flag3');
+					$nextLetterContainer = $nextLetterContainer.next();
+				}
+				console.log($nextLetterContainer);
+				$tryLetter = $nextLetterContainer.find('.letter:not(.invalid) input.guess:enabled');
+				if ($tryLetter.length === 0) console.log($tryLetter);
+				tryKey = angular.element($tryLetter).scope().letter.KEY;
+				if (!$scope.textBoxes[tryKey] || !$scope.textBoxes[tryKey].SOLVED) {
+					// console.log($scope.textBoxes, tryKey, $scope.textBoxes[tryKey]);
+					$nextLetter = $tryLetter;
+				}
+			}
+			$timeout(function() {
+				$nextLetter.focus();
+			}, 0, false);
+			if ($nextLetter.length === 0) {
+				console.log('flag');
+			}
+		}
 	}
 	//Utility
 	function normalizeQuoteData(quoteData) {
@@ -155,35 +200,42 @@ function GameCtrl($scope, config, $http, $interval) {
 	}
 	function createQuoteModel(quote) {
 		var rawWordArray = quote.toUpperCase().split(CONFIG.STRINGS.SPACE),
-			rawWordArrayIterator = rawWordArray.length - CONFIG.NUMBERS.ONE,
+			rawWordArrayIterator = rawWordArray.length,
 			wordArray = [],
 			LETTER_REGEX = CONFIG.LETTER_REGEX,
-			solutionMapping = {}
+			solutionMapping = {},
+			letterIndex = CONFIG.NUMBERS.INVALID_INDEX
 		;
 		blockedKeys = '';
+		letterArray = [];
 
-		do {
+		while(rawWordArrayIterator--) {
 			var word = rawWordArray[rawWordArrayIterator],
 				rawLetterArray = word.split(CONFIG.STRINGS.EMPTY),
-				rawLetterArrayIterator = rawLetterArray.length - CONFIG.NUMBERS.ONE,
+				rawLetterArrayIterator = rawLetterArray.length,
 				currentLetterArray = []
 			;
 
-			do {
+			while(rawLetterArrayIterator--) {
 				var letter = rawLetterArray[rawLetterArrayIterator],
-					validLetter = LETTER_REGEX.test(letter)
+					validLetter = LETTER_REGEX.test(letter),
+					letterObj = {
+						LETTER: letter,
+						VALID: validLetter,
+						DISPLAY: validLetter ? CONFIG.STRINGS.EMPTY : letter,
+						KEY: validLetter ? getKeyFromMap(solutionMapping, letter, blockedKeys) : null,
+						INDEX: letterIndex++
+					}
 				;
-				currentLetterArray.push({
-					LETTER: letter,
-					VALID: validLetter,
-					DISPLAY: validLetter ? CONFIG.STRINGS.EMPTY : letter,
-					KEY: validLetter ? getKeyFromMap(solutionMapping, letter, blockedKeys) : null
-				});
-			} while(rawLetterArrayIterator--);
+				currentLetterArray.push(letterObj);
+				letterArray.push(letterObj);
+			}
 
 
-			wordArray.push({ LETTERS: currentLetterArray.reverse() });
-		} while(rawWordArrayIterator--);
+			wordArray.push({
+				LETTERS: currentLetterArray.reverse()
+			});
+		}
 
 		$scope.quote = {
 			QUOTE: quote,
@@ -219,12 +271,13 @@ function GameCtrl($scope, config, $http, $interval) {
 
 GameCtrl.$inject = [
 	'$scope',
-	'config',
 	'$http',
-	'$interval'
+	'$timeout',
+	'$interval',
+	'config'
 ];
 app.controller('GameCtrl', GameCtrl);
 
 
 
-})(angular, app);
+})(angular, app, jQuery);
