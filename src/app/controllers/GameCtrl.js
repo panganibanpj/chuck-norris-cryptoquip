@@ -6,7 +6,7 @@ TODO:
 	Auto width non-word chars
 	Hints
 */
-define(['angular', 'limit-chars'], function(angular) {
+define([], function() {
 	/* Main */
 	function GameCtrl($scope, $http, $timeout, $interval, config) {
 		/* Config */
@@ -270,5 +270,5 @@ define(['angular', 'limit-chars'], function(angular) {
 		'$interval',
 		'config'
 	];
-	angular.module('Cryptoquip').controller('GameCtrl', GameCtrl);
+	return GameCtrl;
 });

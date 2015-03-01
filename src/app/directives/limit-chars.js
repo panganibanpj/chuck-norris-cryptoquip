@@ -1,7 +1,7 @@
 /*
 	Limits input
 */
-define(['angular', 'config'], function(angular) {
+define([], function() {
 	function limitChars(config) {
 		var CONFIG = angular.extend({}, config);
 
@@ -33,5 +33,6 @@ define(['angular', 'config'], function(angular) {
 	limitChars.$inject = [
 		'config'
 	];
-	angular.module('Cryptoquip').directive('limitChars', limitChars);
+	// angular.module('Cryptoquip').directive('limitChars', limitChars);
+	return limitChars;
 });

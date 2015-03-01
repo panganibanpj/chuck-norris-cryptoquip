@@ -10,7 +10,7 @@ require.config({
 		angular: '../bower_components/angular/angular',
 		'angular-ui-router': '../bower_components/angular-ui-router/release/angular-ui-router.min',
 		'angular-bootstrap': '../bower_components/angular-bootstrap/ui-bootstrap-tpls.min',
-		config: './app/config/config',
+		config: './app/config',
 		_app: './app/app',
 		GameCtrl: './app/controllers/GameCtrl',
 		ScoresCtrl: './app/controllers/ScoresCtrl',
@@ -30,7 +30,7 @@ require.config({
 	}
 });
 
-require(['angular', '_app', 'GameCtrl', 'ScoresCtrl'], function(angular) {
+require(['angular', '_app'], function(angular, _app) {
 	var $html = angular.element(document.getElementsByTagName('html')[0]);
 	angular.element().ready(function() {
 		angular.bootstrap(document, ['Cryptoquip']);

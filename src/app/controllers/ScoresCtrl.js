@@ -1,4 +1,4 @@
-define(['angular'], function(angular) {
+define([], function() {
 	function ScoresCtrl($scope) {
 		//
 	}
@@ -6,5 +6,5 @@ define(['angular'], function(angular) {
 	ScoresCtrl.$inject = [
 		'$scope'
 	];
-	angular.module('Cryptoquip').controller('ScoresCtrl', ScoresCtrl);
+	return ScoresCtrl;
 });

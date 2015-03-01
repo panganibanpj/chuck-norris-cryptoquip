@@ -1,15 +1,16 @@
-define(['angular', 'text!./app/partials/home.html', 'text!./app/partials/scores.html', 'angular-ui-router', 'angular-bootstrap'], function(angular, gameTemplate, scoresTemplate) {
+define(['angular', 'config', 'limit-chars', 'GameCtrl', 'text!./app/partials/home.html', 'ScoresCtrl', 'text!./app/partials/scores.html', 'angular-ui-router', 'angular-bootstrap'],
+function(angular,   config,   limitChars,    GameCtrl,   gameTemplate,                    ScoresCtrl,   scoresTemplate) {
 	function routes($stateProvider, $urlRouterProvider) {
 		$stateProvider
 			.state('game', {
 				url: '/',
 				template: gameTemplate,
-				controller: 'GameCtrl'
+				controller: GameCtrl
 			})
 			.state('scores', {
 				url: '/scores',
 				template: scoresTemplate,
-				controller: 'ScoresCtrl'
+				controller: ScoresCtrl
 			})
 		;
 		$urlRouterProvider.otherwise('/');
@@ -23,6 +24,8 @@ define(['angular', 'text!./app/partials/home.html', 'text!./app/partials/scores.
 			'ui.router'
 			,'ui.bootstrap'
 		])
+		.constant('config', config)
 		.config(routes)
+		.directive('limitChars', limitChars)
 	;
 });
