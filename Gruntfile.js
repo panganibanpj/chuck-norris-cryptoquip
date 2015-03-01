@@ -1,17 +1,3 @@
-/*
-	Make sure you've run:
-		npm install
-		bower install
-
-	Dev build: grunt DEV --keep_console
-		Watches ./app
-
-	Release build: grunt RELEASE
-		Bower install
-
-	--keep_console is optional
-
-*/
 module.exports = function(grunt) {
 	require('load-grunt-tasks')(grunt);
 	var keep_console = grunt.option('keep_console');
@@ -20,31 +6,50 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 
-
-		bower: {
-			install: {
-				options: {
-					targetDir : './app/components',
-					cleanBowerDir : false,
-					install: false
-				}
-			}
-		},
 		clean: {
 			main: [
 				'./dist'
 			],
 			dist: [
-				'./dist/assets/css'
 			]
 		},
 		copy: {
 			main: {
+				files: [
+					{
+						expand: true,
+						cwd: './src',
+						src: [
+							'./index.html',
+							'./assets/**',
+							'!./assets/styles/**'
+						],
+						dest: './dist',
+						filter: 'isFile'
+					},
+					{
+						expand: true,
+						cwd: './src/app',
+						src: './main.js',
+						dest: './dist',
+						filter: 'isFile'
+					},
+					{
+						expand: true,
+						cwd: './bower_components/requirejs/',
+						src: './require.js',
+						dest: './dist',
+						filter: 'isFile'
+					}
+				]
+			},
+			dev: {
 				files: [{
 					expand: true,
-					cwd: './app',
+					cwd: './src',
 					src: [
-						'./**'
+						'./app/**',
+						'!./app/main.js'
 					],
 					dest: './dist',
 					filter: 'isFile'
@@ -52,8 +57,52 @@ module.exports = function(grunt) {
 			}
 		},
 
+		sass: {
+			main: {
+				options: {
+					style: 'nested',
+					sourcemap: 'none'
+				},
+				files: [{
+					expand: true,
+					cwd: './src/assets/styles',
+					src: [
+						"*.scss"
+					],
+					dest: "./dist/assets/styles",
+					ext: '.css'
+				}]
+			}
+		},
+		requirejs: {
+			main: {
+				options: {
+					baseUrl: './src',
+					name: './app/main',
+					mainConfigFile: './src/app/main.js',
+					optimize: 'uglify2',
+					uglify2: {
+						compress: {
+							drop_console: !keep_console
+						}
+					},
+					// generateSourceMaps: true,
+					preserveLicenseComments: false,
+					out: './dist/main.js'
+				}
+			},
+			dev: {
+				options: {
+					baseUrl: './src',
+					name: './app/main',
+					mainConfigFile: './src/app/main.js',
+					optimize: 'none',
+					out: './dist/main.js'
+				}
+			}
+		},
 		useminPrepare: {
-			html: './app/index.html',
+			html: './dist/index.html',
 			options: {
 				flow: {
 					html: {
@@ -77,48 +126,12 @@ module.exports = function(grunt) {
 		},
 		uglify: {
 			options: {
-				banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
+				// banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
 				mangle: true,
 				compress: {
 					drop_console: !keep_console
-				},
-				sourceMap: true
-			}
-		},
-
-		filerev: {
-			options: {
-				encoding: 'utf8',
-				algorithm: 'md5',
-				length: 8
-			},
-			sourcemaps: {
-				src: [
-					'./dist/*.map'
-				]
-			},
-			assets: {
-				src: [
-					'./dist/*.min.js',
-					'./dist/*.min.css'
-				]
-			}
-		},
-		userev: {
-			options: {
-				hash: /(\.[a-f0-9]{8})\.[a-z]+$/,
-			},
-			sourcemaps: {
-				src: [
-					'./dist/*.min.css',
-					'./dist/*.min.js',
-					'./dist/*.map'
-				],
-				options: {
-					patterns: {
-						'Linking versioned source maps': /sourceMappingURL=([a-z0-9.]*\.map)/
-					}
 				}
+				// ,sourceMap: true
 			}
 		},
 
@@ -128,7 +141,8 @@ module.exports = function(grunt) {
 					'./app/**'
 				],
 				tasks: [
-					'default'
+					'start'
+					,'localDeploy'
 				],
 				options: {
 					nospawn: true
@@ -139,27 +153,31 @@ module.exports = function(grunt) {
 
 
 	grunt.registerTask('productionalize', [ //Minification and cache bust
-		'useminPrepare'
-		,'uglify:generated'
+		'requirejs:main'
+		,'useminPrepare'
 		,'cssmin:generated'
-		,'filerev:sourcemaps'
-		,'userev'
-		,'filerev:assets'
 		,'usemin'
 		,'clean:dist'
 	]);
-	grunt.registerTask('default', [
-		'bower'
-		,'clean:main'
-		,'copy'
+	grunt.registerTask('start', [
+		'clean:main'
+		,'copy:main'
+		,'sass'
 	]);
-
-	grunt.registerTask('DEV', [
-		'default'
-		,'watch'
+	grunt.registerTask('default', [
+		'start'
+		,'copy:dev'
+		,'requirejs:dev'
+		,'localDeploy'
+	]);
+	grunt.registerTask('localDeploy', [
+		'clean:deploy'
+		,'copy:deploy'
 	]);
 	grunt.registerTask('RELEASE', [
-		'default'
+		'start'
 		,'productionalize'
+		,'clean:dist'
+		,'localDeploy'
 	]);
 };
