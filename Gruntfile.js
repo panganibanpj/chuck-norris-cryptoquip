@@ -169,16 +169,10 @@ module.exports = function(grunt) {
 		'start'
 		,'copy:dev'
 		,'requirejs:dev'
-		,'localDeploy'
-	]);
-	grunt.registerTask('localDeploy', [
-		'clean:deploy'
-		,'copy:deploy'
 	]);
 	grunt.registerTask('RELEASE', [
 		'start'
 		,'productionalize'
 		,'clean:dist'
-		,'localDeploy'
 	]);
 };
