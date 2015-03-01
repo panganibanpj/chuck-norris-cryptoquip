@@ -11,6 +11,7 @@ module.exports = function(grunt) {
 				'./dist'
 			],
 			dist: [
+				'./dist/assets/styles'
 			]
 		},
 		copy: {
