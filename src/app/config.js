@@ -1,7 +1,8 @@
 /*
 	Static strings + numbers, etc.
 */
-define([], function() {
+define([], function()
+{
 	return {
 		//Generic
 		NUMBERS: {

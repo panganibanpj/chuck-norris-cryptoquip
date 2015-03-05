@@ -7,15 +7,18 @@
 require.config({
 	baseUrl: './',
 	paths: {
-		angular: '../bower_components/angular/angular',
-		'angular-ui-router': '../bower_components/angular-ui-router/release/angular-ui-router.min',
-		'angular-bootstrap': '../bower_components/angular-bootstrap/ui-bootstrap-tpls.min',
-		config: './app/config',
+		angular: '//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular',
+		'angular-ui-router': '//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.13/angular-ui-router',
+		'angular-ui-bootstrap': '//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls',
+		text: '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.12/text',
 		_app: './app/app',
-		GameCtrl: './app/controllers/GameCtrl',
-		ScoresCtrl: './app/controllers/ScoresCtrl',
-		'limit-chars': './app/directives/limit-chars',
-		text: '../bower_components/requirejs-text/text'
+		config: './app/config',
+		routes: './app/routes',
+		model: './app/model/modelFactory',
+		'services/joke': './app/services/jokeService',
+		'controllers/game': './app/controllers/GameCtrl',
+		'controllers/scores': './app/controllers/ScoresCtrl',
+		'directives/limit-chars': './app/directives/limit-chars'
 	},
 	shim: {
 		angular: {
@@ -24,14 +27,14 @@ require.config({
 		'angular-ui-router': {
 			deps: ['angular']
 		},
-		'angular-bootstrap': {
+		'angular-ui-bootstrap': {
 			deps: ['angular']
 		}
 	}
 });
 
-require(['angular', '_app'], function(angular, _app) {
-	var $html = angular.element(document.getElementsByTagName('html')[0]);
+require(['angular', '_app'], function(angular)
+{
 	angular.element().ready(function() {
 		angular.bootstrap(document, ['Cryptoquip']);
 	});

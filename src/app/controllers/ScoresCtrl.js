@@ -1,4 +1,5 @@
-define([], function() {
+define([], function()
+{
 	function ScoresCtrl($scope) {
 		//
 	}

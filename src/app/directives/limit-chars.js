@@ -1,22 +1,23 @@
 /*
 	Limits input
 */
-define([], function() {
-	function limitChars(config) {
-		var CONFIG = angular.extend({}, config);
+define([], function()
+{
+	function limitChars(magic) {
+		var MAGIC = angular.extend({}, magic);
 
 		function link(scope, element, attrs, ngModelCtrl) {
 			var limit = Number(attrs.limitChars);
 			function limitCharsParser(text) {
 				if (text.length > limit) {
-					var clippedText = text.substring(CONFIG.NUMBERS.ZERO, limit);
+					var clippedText = text.substring(MAGIC.NUMBERS.ZERO, limit);
 					ngModelCtrl.$setViewValue(clippedText);
 					ngModelCtrl.$render();
-					element[CONFIG.NUMBERS.ZERO].select();
+					element[MAGIC.NUMBERS.ZERO].select();
 					return clippedText;
 				}
 				else if (text.length === limit) {
-					element[CONFIG.NUMBERS.ZERO].select();
+					element[MAGIC.NUMBERS.ZERO].select();
 				}
 				return text;
 			}
@@ -31,8 +32,8 @@ define([], function() {
 	}
 
 	limitChars.$inject = [
-		'config'
+		'magic'
 	];
-	// angular.module('Cryptoquip').directive('limitChars', limitChars);
+
 	return limitChars;
 });
