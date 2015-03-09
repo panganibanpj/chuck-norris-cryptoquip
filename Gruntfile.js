@@ -81,6 +81,12 @@ module.exports = function(grunt) {
 					baseUrl: './src',
 					name: './app/main',
 					mainConfigFile: './src/app/main.js',
+					paths: {
+						'angular': '../bower_components/angular/angular.min',
+						'angular-ui-router': '../bower_components/angular-ui-router/release/angular-ui-router.min',
+						'angular-ui-bootstrap': '../bower_components/angular-bootstrap/ui-bootstrap-tpls.min',
+						'text': '../bower_components/requirejs-text/text'
+					},
 					optimize: 'uglify2',
 					uglify2: {
 						compress: {
@@ -168,7 +174,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('default', [
 		'start'
 		,'copy:dev'
-		,'requirejs:dev'
+		// ,'requirejs:dev'
 	]);
 	grunt.registerTask('RELEASE', [
 		'start'

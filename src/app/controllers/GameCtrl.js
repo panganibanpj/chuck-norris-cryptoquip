@@ -6,11 +6,12 @@ TODO:
 	Auto width non-word chars
 	Hints
 */
-define([], function() {
+define([], function()
+{
 	/* Main */
-	function GameCtrl($scope, $http, $timeout, $interval, config) {
+	function GameCtrl($scope, $http, $timeout, $interval, magic) {
 		/* Config */
-		var CONFIG = angular.extend({
+		var MAGIC = angular.extend({
 			NAMESPACE: 'GAME.',
 
 			//Fetching and massaging
@@ -31,12 +32,12 @@ define([], function() {
 			//Timer
 			STARTING_TIME: 60000,
 			INTERVAL_LENGTH: 100
-		}, config);
+		}, magic);
 
 
 
 		/* Variables */
-		var NAMESPACE = CONFIG.NAMESPACE,
+		var NAMESPACE = MAGIC.NAMESPACE,
 			blockedKeys = '',
 			countdownTimer,
 			letterArray = []
@@ -44,8 +45,8 @@ define([], function() {
 		$scope.quote = {};
 		$scope.textBoxes = {};
 		$scope.status = {
-			timeRemaining: CONFIG.STARTING_TIME,
-			score: CONFIG.NUMBERS.ZERO
+			timeRemaining: MAGIC.STARTING_TIME,
+			score: MAGIC.NUMBERS.ZERO
 		};
 
 
@@ -70,8 +71,8 @@ define([], function() {
 		}
 		function getNewQuote(event) {// GET_NEW_QUOTE
 			$http({
-				method: CONFIG.HTTP_METHOD,
-				url: CONFIG.QUOTE_ENDPOINT
+				method: MAGIC.HTTP_METHOD,
+				url: MAGIC.QUOTE_ENDPOINT
 			})
 			.error(function(data) {
 				$scope.$emit(NAMESPACE + EVENTS.ERROR_GETTING_QUOTE, [data]);
@@ -97,18 +98,18 @@ define([], function() {
 		}
 		function setupTimer() {
 			var countdownTick = function() {
-				$scope.status.timeRemaining -= CONFIG.INTERVAL_LENGTH;
+				$scope.status.timeRemaining -= MAGIC.INTERVAL_LENGTH;
 				if (!$scope.status.timeRemaining) {
 					$scope.$emit(NAMESPACE + EVENTS.OUT_OF_TIME);
 				}
 			};
 
 			$scope.status = {
-				timeRemaining: CONFIG.STARTING_TIME,
-				score: CONFIG.NUMBERS.ZERO
+				timeRemaining: MAGIC.STARTING_TIME,
+				score: MAGIC.NUMBERS.ZERO
 			};
 
-			countdownTimer = $interval(countdownTick, CONFIG.INTERVAL_LENGTH);
+			countdownTimer = $interval(countdownTick, MAGIC.INTERVAL_LENGTH);
 		}
 		function outOfTime(event) { //OUT_OF_TIME
 			$interval.cancel(countdownTimer);
@@ -117,7 +118,7 @@ define([], function() {
 			//
 		}
 		function testLetter($event, letterMap) {
-			if ($scope.textBoxes[letterMap.KEY].letter.length === CONFIG.NUMBERS.ZERO) {
+			if ($scope.textBoxes[letterMap.KEY].letter.length === MAGIC.NUMBERS.ZERO) {
 				return;
 			}
 			// console.log(letterMap, $scope.textBoxes);
@@ -162,12 +163,12 @@ define([], function() {
 		}
 		//Utility
 		function normalizeQuoteData(quoteData) {
-			var translationKey = CONFIG.QUOTE_SOURCE_MAP[CONFIG.QUOTE_ENDPOINT],
+			var translationKey = MAGIC.QUOTE_SOURCE_MAP[MAGIC.QUOTE_ENDPOINT],
 				normalizedData = false
 			;
 
 			//Testing high-speed conditionals: http://jsperf.com/switch-if-else/33
-			translationKey === CONFIG.QUOTE_SOURCE_MAPS.ICNDB && (normalizedData = normalize_icndb(quoteData));
+			translationKey === MAGIC.QUOTE_SOURCE_MAPS.ICNDB && (normalizedData = normalize_icndb(quoteData));
 
 			return normalizedData;
 		}
@@ -179,9 +180,9 @@ define([], function() {
 			return quoteData.type !== 'success' || !joke || joke.length === 0 ? false : { 'id': quoteData.value.id, 'quote': joke };
 		}
 		function getKeyFromMap(map, letter) {
-			var ALPHABET = CONFIG.ALPHABET,
-				NUM_OF_LETTERS = CONFIG.LETTERS_IN_ALPHABET,
-				INVALID_INDEX = CONFIG.NUMBERS.INVALID_INDEX,
+			var ALPHABET = MAGIC.ALPHABET,
+				NUM_OF_LETTERS = MAGIC.LETTERS_IN_ALPHABET,
+				INVALID_INDEX = MAGIC.NUMBERS.INVALID_INDEX,
 				alreadyTriedLetters = ''
 			;
 			while(!map[letter] && alreadyTriedLetters.length < NUM_OF_LETTERS) {
@@ -195,19 +196,19 @@ define([], function() {
 			return map[letter];
 		}
 		function createQuoteModel(quote) {
-			var rawWordArray = quote.toUpperCase().split(CONFIG.STRINGS.SPACE),
+			var rawWordArray = quote.toUpperCase().split(MAGIC.STRINGS.SPACE),
 				rawWordArrayIterator = rawWordArray.length,
 				wordArray = [],
-				LETTER_REGEX = CONFIG.LETTER_REGEX,
+				LETTER_REGEX = MAGIC.LETTER_REGEX,
 				solutionMapping = {},
-				letterIndex = CONFIG.NUMBERS.INVALID_INDEX
+				letterIndex = MAGIC.NUMBERS.INVALID_INDEX
 			;
 			blockedKeys = '';
 			letterArray = [];
 
 			while(rawWordArrayIterator--) {
 				var word = rawWordArray[rawWordArrayIterator],
-					rawLetterArray = word.split(CONFIG.STRINGS.EMPTY),
+					rawLetterArray = word.split(MAGIC.STRINGS.EMPTY),
 					rawLetterArrayIterator = rawLetterArray.length,
 					currentLetterArray = []
 				;
@@ -218,7 +219,7 @@ define([], function() {
 						letterObj = {
 							LETTER: letter,
 							VALID: validLetter,
-							DISPLAY: validLetter ? CONFIG.STRINGS.EMPTY : letter,
+							DISPLAY: validLetter ? MAGIC.STRINGS.EMPTY : letter,
 							KEY: validLetter ? getKeyFromMap(solutionMapping, letter, blockedKeys) : null,
 							INDEX: letterIndex++
 						}
@@ -268,7 +269,7 @@ define([], function() {
 		'$http',
 		'$timeout',
 		'$interval',
-		'config'
+		'magic'
 	];
 	return GameCtrl;
 });
