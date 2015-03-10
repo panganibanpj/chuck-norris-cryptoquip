@@ -1,15 +1,15 @@
 /*
-TODO:
-	Timer
-	Score
-	Auto-tab text boxes to next available
-	Auto width non-word chars
-	Hints
+	TODO:
+		Timer
+		Score
+		Auto-tab text boxes to next available
+		Auto width non-word chars
+		Hints
 */
 define([], function()
 {
 	/* Main */
-	function GameCtrl($scope, $http, $timeout, $interval, magic) {
+	function gameController($scope, $http, $timeout, $interval, magic) {
 		/* Config */
 		var MAGIC = angular.extend({
 			NAMESPACE: 'GAME.',
@@ -85,12 +85,12 @@ define([], function()
 		}
 		function gotNewQuote(event, quoteData) {// GOT_NEW_QUOTE
 			var sanitizedQuoteData = normalizeQuoteData(quoteData);
-			if (!sanitizedQuoteData) {
-				$scope.$emit(NAMESPACE + EVENTS.ERROR_GETTING_QUOTE, [quoteData]);
-				return;
+			if (sanitizedQuoteData) {
+				createQuoteModel(sanitizedQuoteData.quote);
 			}
-
-			createQuoteModel(sanitizedQuoteData.quote);
+			else {
+				$scope.$emit(NAMESPACE + EVENTS.ERROR_GETTING_QUOTE, [quoteData]);
+			}
 		}
 		function errorGettingQuote(event, errorData) {// ERROR_GETTING_QUOTE
 			console.log(errorData);
@@ -141,10 +141,9 @@ define([], function()
 							break; //Probably End of puzzle
 						}
 					}
-					else {console.log('flag3');
+					else {
 						$nextLetterContainer = $nextLetterContainer.next();
 					}
-					console.log($nextLetterContainer);
 					$tryLetter = $nextLetterContainer.find('.letter:not(.invalid) input.guess:enabled');
 					if ($tryLetter.length === 0) console.log($tryLetter);
 					tryKey = angular.element($tryLetter).scope().letter.KEY;
@@ -157,7 +156,7 @@ define([], function()
 					$nextLetter.focus();
 				}, 0, false);
 				if ($nextLetter.length === 0) {
-					console.log('flag');
+					//
 				}
 			}
 		}
@@ -196,9 +195,8 @@ define([], function()
 			return map[letter];
 		}
 		function createQuoteModel(quote) {
-			var rawWordArray = quote.toUpperCase().split(MAGIC.STRINGS.SPACE),
-				rawWordArrayIterator = rawWordArray.length,
-				wordArray = [],
+			var rawWords = quote.toUpperCase().split(MAGIC.STRINGS.SPACE),
+				words = [],
 				LETTER_REGEX = MAGIC.LETTER_REGEX,
 				solutionMapping = {},
 				letterIndex = MAGIC.NUMBERS.INVALID_INDEX
@@ -206,16 +204,13 @@ define([], function()
 			blockedKeys = '';
 			letterArray = [];
 
-			while(rawWordArrayIterator--) {
-				var word = rawWordArray[rawWordArrayIterator],
-					rawLetterArray = word.split(MAGIC.STRINGS.EMPTY),
-					rawLetterArrayIterator = rawLetterArray.length,
-					currentLetterArray = []
+			rawWords.forEach(function(word) {
+				var rawLetters = word.split(MAGIC.STRINGS.EMPTY),
+					letters = []
 				;
 
-				while(rawLetterArrayIterator--) {
-					var letter = rawLetterArray[rawLetterArrayIterator],
-						validLetter = LETTER_REGEX.test(letter),
+				rawLetters.forEach(function(letter) {
+					var validLetter = LETTER_REGEX.test(letter),
 						letterObj = {
 							LETTER: letter,
 							VALID: validLetter,
@@ -224,19 +219,19 @@ define([], function()
 							INDEX: letterIndex++
 						}
 					;
-					currentLetterArray.push(letterObj);
+					letters.push(letterObj);
 					letterArray.push(letterObj);
-				}
-
-
-				wordArray.push({
-					LETTERS: currentLetterArray.reverse()
 				});
-			}
+
+
+				words.push({
+					LETTERS: letters
+				});
+			});
 
 			$scope.quote = {
 				QUOTE: quote,
-				WORDS: wordArray.reverse()
+				WORDS: words
 			};
 		}
 
@@ -264,12 +259,12 @@ define([], function()
 		init();
 	}
 
-	GameCtrl.$inject = [
+	gameController.$inject = [
 		'$scope',
 		'$http',
 		'$timeout',
 		'$interval',
 		'magic'
 	];
-	return GameCtrl;
+	return gameController;
 });

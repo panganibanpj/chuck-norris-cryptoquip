@@ -11,7 +11,9 @@ module.exports = function(grunt) {
 				'./dist'
 			],
 			dist: [
-				'./dist/assets/styles'
+				'./dist/common/common.css',
+				'./dist/*/',
+				'!./dist/assets/'
 			]
 		},
 		copy: {
@@ -22,8 +24,8 @@ module.exports = function(grunt) {
 						cwd: './src',
 						src: [
 							'./index.html',
-							'./assets/**',
-							'!./assets/styles/**'
+							'./common/**',
+							'./assets/**'
 						],
 						dest: './dist',
 						filter: 'isFile'
@@ -66,11 +68,12 @@ module.exports = function(grunt) {
 				},
 				files: [{
 					expand: true,
-					cwd: './src/assets/styles',
+					cwd: './src',
 					src: [
-						"*.scss"
+						"./common/common.scss",
+						"./app/*/*.scss"
 					],
-					dest: "./dist/assets/styles",
+					dest: "./dist",
 					ext: '.css'
 				}]
 			}

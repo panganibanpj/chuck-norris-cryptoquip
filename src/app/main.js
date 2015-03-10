@@ -11,14 +11,13 @@ require.config({
 		'angular-ui-router': '//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.13/angular-ui-router',
 		'angular-ui-bootstrap': '//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls',
 		text: '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.12/text',
-		_app: './app/app',
-		config: './app/config',
+
+		config: './common/config',
 		routes: './app/routes',
-		model: './app/model/modelFactory',
-		'services/joke': './app/services/jokeService',
-		'controllers/game': './app/controllers/GameCtrl',
-		'controllers/scores': './app/controllers/ScoresCtrl',
-		'directives/limit-chars': './app/directives/limit-chars'
+		directives: './app/directives',
+
+		game: './app/game',
+		highScores: './app/highScores'
 	},
 	shim: {
 		angular: {
@@ -33,8 +32,20 @@ require.config({
 	}
 });
 
-require(['angular', '_app'], function(angular)
+require(['angular', 'config', 'routes', 'directives/limit-chars'],
+function( angular,   config,   routes,   limitChars)
 {
+	var injections = [
+		'ui.router'
+		,'ui.bootstrap'
+	];
+	angular
+		.module('Cryptoquip', injections)
+		.constant('magic', config)
+		.config(routes)
+		.directive('limitChars', limitChars)
+	;
+
 	angular.element().ready(function() {
 		angular.bootstrap(document, ['Cryptoquip']);
 	});

@@ -1,22 +1,22 @@
 //Routes
 
-define(['controllers/game', 'text!./app/views/home.html', 'controllers/scores', 'text!./app/views/scores.html', 'angular-ui-router', 'angular-ui-bootstrap'],
-function(GameCtrl,           gameTemplate,                 ScoresCtrl,           scoresTemplate)
+define(['game/gameController', 'text!game/game.html', 'highScores/highScoresController', 'text!highScores/highScores.html', 'angular-ui-router', 'angular-ui-bootstrap'],
+function(gameController,        gameTemplate,          highScoresController,              highScoresTemplate)
 {
 	function routes($stateProvider, $urlRouterProvider) {
 		$stateProvider
 			.state('game', {
-				url: '/',
+				url: '/game',
 				template: gameTemplate,
-				controller: GameCtrl
+				controller: gameController
 			})
-			.state('scores', {
-				url: '/scores',
-				template: scoresTemplate,
-				controller: ScoresCtrl
+			.state('high-scores', {
+				url: '/high-scores',
+				template: highScoresTemplate,
+				controller: highScoresController
 			})
 		;
-		$urlRouterProvider.otherwise('/');
+		$urlRouterProvider.otherwise('/game');
 	}
 	routes.$inject = [
 		'$stateProvider',
